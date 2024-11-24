@@ -43,18 +43,23 @@ async def calculate_length(changeset_id: int):
         nodes[node_id] = (lon, lat)
 
     linestrings = []
-    for way in root.findall(".//way"):
-        way_nodes = []
-        for nd in way.findall(".//nd"):
-            ref = nd.attrib['ref']
-            if ref in nodes:
-                way_nodes.append(nodes[ref])
-        linestring = shapely.geometry.LineString(way_nodes)
-        linestrings.append(linestring)
+    create_blocks = root.findall(".//create")
+    for create in create_blocks:
+        for way in create.findall(".//way"):
+            way_nodes = []
+            for nd in way.findall(".//nd"):
+                ref = nd.attrib['ref']
+                if ref in nodes:
+                    way_nodes.append(nodes[ref])
+            if way_nodes:
+                linestring = shapely.geometry.LineString(way_nodes)
+                linestrings.append(linestring)
 
-    gdf = gpd.GeoDataFrame(geometry=linestrings).set_crs("EPSG:4326")
-    gdf = gdf.to_crs(gdf.estimate_utm_crs().to_epsg())
+    if linestrings:
+        gdf = gpd.GeoDataFrame(geometry=linestrings).set_crs("EPSG:4326")
+        gdf = gdf.to_crs(gdf.estimate_utm_crs().to_epsg())
+        total_length = int(gdf.length.sum())
+    else:
+        total_length = 0
 
-    total_length = int(gdf.length.sum())
     return {"total_length": total_length}
-
