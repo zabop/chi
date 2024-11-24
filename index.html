@@ -13,8 +13,8 @@
         }
 
         try {
-          //const url = `https://chi-aged-lake-3370.fly.dev/calculate_length/?changeset_id=${changesetId}`;
-          const url = `http://0.0.0.0:8000/calculate_length/?changeset_id=${changesetId}`;
+          const url = `https://chi-aged-lake-3370.fly.dev/calculate_length/?changeset_id=${changesetId}`;
+          //const url = `http://0.0.0.0:8000/calculate_length/?changeset_id=${changesetId}`;
           const response = await fetch(url, { mode: "cors" });
           if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);
