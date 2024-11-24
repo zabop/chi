@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Changeset Length Viewer</title>
+    <script>
+      async function fetchChangesetDetails() {
+        const changesetId = document.getElementById("changesetId").value;
+        if (!changesetId || isNaN(changesetId) || changesetId <= 0) {
+          alert("Please enter a valid positive integer for the changeset ID.");
+          return;
+        }
+
+        try {
+          //const url = `https://chi-aged-lake-3370.fly.dev/calculate_length/?changeset_id=${changesetId}`;
+          const url = `http://0.0.0.0:8000/calculate_length/?changeset_id=${changesetId}`;
+          const response = await fetch(url, { mode: "cors" });
+          if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+          }
+          const data = await response.json();
+          document.getElementById(
+            "result"
+          ).innerText = `Total length of new ways: ${data.total_length} meters.`;
+        } catch (error) {
+          document.getElementById(
+            "result"
+          ).innerText = `An error occurred: ${error.message}`;
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>New Way Length Viewer</h1>
+    <p>
+      Enter a changeset ID to retrieve the total length of the new ways in it:
+    </p>
+    <input type="number" id="changesetId" placeholder="Enter changeset ID" />
+    <button onclick="fetchChangesetDetails()">Submit</button>
+    <p id="result"></p>
+  </body>
+</html>
