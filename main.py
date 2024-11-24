@@ -37,10 +37,11 @@ async def calculate_length(changeset_id: int):
 
     nodes = {}
     for node in root.findall(".//node"):
-        node_id = node.attrib['id']
-        lat = float(node.attrib['lat'])
-        lon = float(node.attrib['lon'])
-        nodes[node_id] = (lon, lat)
+        if "lat" in node.attrib and "lon" in node.attrib:
+            node_id = node.attrib['id']
+            lat = float(node.attrib['lat'])
+            lon = float(node.attrib['lon'])
+            nodes[node_id] = (lon, lat)
 
     linestrings = []
     create_blocks = root.findall(".//create")
