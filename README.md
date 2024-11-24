@@ -1,3 +1,3 @@
 https://zabop.github.io/chi/
 
-Example: https://chi-aged-lake-3370.fly.dev/calculate_length/?changeset_id=158793285.
+[Backend query example](https://chi-aged-lake-3370.fly.dev/calculate_length/?changeset_id=158793285).
