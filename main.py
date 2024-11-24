@@ -1,10 +1,24 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from xml.etree import ElementTree as ET
 import geopandas as gpd
 import shapely.geometry
 import requests
 
 app = FastAPI()
+
+origins = [
+    #"https://geojson2csv.com",
+    "*" # local dev
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["POST"],
+    allow_headers=["*"],
+)
 
 @app.get("/calculate_length/")
 async def calculate_length(changeset_id: int):
