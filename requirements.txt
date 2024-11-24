@@ -1,0 +1,6 @@
+fastapi
+fastapi-cors
+uvicorn
+requests
+geopandas
+shapely
