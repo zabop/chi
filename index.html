@@ -4,6 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Changeset Length Viewer</title>
+    <style>
+      #spinner {
+        display: none;
+        margin-top: 10px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
     <script>
       async function fetchChangesetDetails() {
         const changesetId = document.getElementById("changesetId").value;
@@ -11,22 +31,22 @@
           alert("Please enter a valid positive integer for the changeset ID.");
           return;
         }
-
+        const spinner = document.getElementById("spinner");
+        const result = document.getElementById("result");
+        spinner.style.display = "block";
+        result.innerText = "";
         try {
           const url = `https://chi-aged-lake-3370.fly.dev/calculate_length/?changeset_id=${changesetId}`;
-          //const url = `http://0.0.0.0:8000/calculate_length/?changeset_id=${changesetId}`;
           const response = await fetch(url, { mode: "cors" });
           if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);
           }
           const data = await response.json();
-          document.getElementById(
-            "result"
-          ).innerText = `Total length of new ways: ${data.total_length} meters.`;
+          result.innerText = `Total length of new ways: ${data.total_length} meters.`;
         } catch (error) {
-          document.getElementById(
-            "result"
-          ).innerText = `An error occurred: ${error.message}`;
+          result.innerText = `An error occurred: ${error.message}`;
+        } finally {
+          spinner.style.display = "none";
         }
       }
     </script>
@@ -38,6 +58,7 @@
     </p>
     <input type="number" id="changesetId" placeholder="Enter changeset ID" />
     <button onclick="fetchChangesetDetails()">Submit</button>
+    <div id="spinner"></div>
     <p id="result"></p>
   </body>
 </html>
