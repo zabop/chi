@@ -8,8 +8,8 @@ import requests
 app = FastAPI()
 
 origins = [
-    #"https://geojson2csv.com",
-    "*" # local dev
+    "https://zabop.github.io/chi/",
+    #"*" # local dev
 ]
 
 app.add_middleware(
