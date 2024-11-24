@@ -8,7 +8,7 @@ import requests
 app = FastAPI()
 
 origins = [
-    "https://zabop.github.io/chi/",
+    "https://zabop.github.io",
     #"*" # local dev
 ]
 
