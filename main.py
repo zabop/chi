@@ -52,7 +52,7 @@ async def calculate_length(changeset_id: int):
                 ref = nd.attrib['ref']
                 if ref in nodes:
                     way_nodes.append(nodes[ref])
-            if way_nodes:
+            if len(way_nodes)>1:
                 linestring = shapely.geometry.LineString(way_nodes)
                 linestrings.append(linestring)
 
