@@ -43,7 +43,7 @@
           }
           const data = await response.json();
           result.innerHTML = `Total length of new ways: ${data.total_length} metres. <a href="${data.geojsonio_url}" target="_blank">View map of new ways</a>.`;
-          result.innerHTML += `Changeset on <a href="https://overpass-api.de/achavi/?changeset=${changesetId}" target="_blank">Achavi</a>.`;
+          result.innerHTML += `<br>Changeset on <a href="https://overpass-api.de/achavi/?changeset=${changesetId}" target="_blank">Achavi</a>.`;
         } catch (error) {
           result.innerText = `An error occurred: ${error.message}`;
         } finally {
