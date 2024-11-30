@@ -42,7 +42,7 @@
             throw new Error(`Error: ${response.statusText}`);
           }
           const data = await response.json();
-          result.innerText = `Total length of new ways: ${data.total_length} metres. Link to map: ${data.geojsonio_url}`;
+          result.innerHTML = `Total length of new ways: ${data.total_length} metres. <a href="${data.geojsonio_url}" target="_blank">View map of new ways</a>`;
         } catch (error) {
           result.innerText = `An error occurred: ${error.message}`;
         } finally {
