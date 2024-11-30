@@ -23,44 +23,35 @@ app.add_middleware(
 @app.get("/calculate_length/")
 async def calculate_length(changeset_id: int):
     url = f"https://www.openstreetmap.org/api/0.6/changeset/{changeset_id}/download"
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        raise HTTPException(status_code=400, detail=f"Error fetching changeset: {e}")
 
-    try:
-        xml_content = response.text
-        root = ET.fromstring(xml_content)
-    except ET.ParseError as e:
-        raise HTTPException(status_code=400, detail=f"Error parsing XML: {e}")
+    root = ET.fromstring(requests.get(url).text)
 
-    nodes = {}
-    for node in root.findall(".//node"):
-        if "lat" in node.attrib and "lon" in node.attrib:
-            node_id = node.attrib['id']
-            lat = float(node.attrib['lat'])
-            lon = float(node.attrib['lon'])
-            nodes[node_id] = (lon, lat)
-
-    linestrings = []
+    way_ids = []
     create_blocks = root.findall(".//create")
     for create in create_blocks:
         for way in create.findall(".//way"):
-            way_nodes = []
-            for nd in way.findall(".//nd"):
-                ref = nd.attrib['ref']
-                if ref in nodes:
-                    way_nodes.append(nodes[ref])
-            if len(way_nodes)>1:
-                linestring = shapely.geometry.LineString(way_nodes)
-                linestrings.append(linestring)
+            way_ids.append(way.get('id'))
 
-    if linestrings:
-        gdf = gpd.GeoDataFrame(geometry=linestrings).set_crs("EPSG:4326")
-        gdf = gdf.to_crs(gdf.estimate_utm_crs().to_epsg())
-        total_length = int(gdf.length.sum())
-    else:
-        total_length = 0
 
-    return {"total_length": total_length}
+    OVERPASS_URL = "http://overpass-api.de/api/interpreter"
+
+    query = ''.join([f"way({way_id});" for way_id in way_ids])
+    query = "[out:json][timeout:25];("+query+");out body;>;out skel qt;"
+
+    resp = requests.post(OVERPASS_URL, data={"data": query}).json()
+
+
+    nodes = {e['id']: (e['lon'], e['lat']) for e in resp['elements'] if e['type'] == 'node'}
+
+    ways = []
+    for element in resp['elements']:
+        if element['type'] == 'way':
+            ways.append(shapely.geometry.LineString([nodes[node_id] for node_id in element['nodes']]))
+
+    lengths = []
+    for way in ways:
+        s = gpd.GeoSeries(way).set_crs("4326")
+        crs = s.estimate_utm_crs()
+        lengths.append(s.to_crs(crs).length.sum())
+
+    return {"total_length": int(sum(lengths))}
